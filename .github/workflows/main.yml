@@ -2,7 +2,9 @@ name: Detect Changed Files and PR Creator Email
 
 on:
   push:
-    types: [opened, synchronize, reopened]
+     paths:
+         - functions.js
+         - index.html
 
 jobs:
   changed-files:
