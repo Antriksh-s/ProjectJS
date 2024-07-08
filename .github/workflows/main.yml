@@ -1,5 +1,4 @@
 name: Detect Changed Files and PR Creator Email
-
 on:
   push:
      paths:
@@ -19,24 +18,21 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          const { data: pullRequest } = await github.pulls.get({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.payload.pull_request.number,
-          });
+          const { github, context } = require('@actions/github');
+          
+          const pull_number = context.payload.pull_request.number;
 
           const { data: files } = await github.pulls.listFiles({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            pull_number: context.payload.pull_request.number,
+            pull_number: pull_number,
             per_page: 100,
           });
 
           const changedFiles = files.map(file => file.filename);
 
-          // Get the email of the PR creator
           const { data: user } = await github.users.getByUsername({
-            username: pullRequest.user.login,
+            username: context.payload.pull_request.user.login,
           });
 
           core.setOutput('changed-files', changedFiles.join(','));
@@ -46,5 +42,3 @@ jobs:
       run: |
         echo "Changed files: ${{ steps.pr-info.outputs.changed-files }}"
         echo "PR Creator Email: ${{ steps.pr-info.outputs.pr-creator-email }}"
-
-      
