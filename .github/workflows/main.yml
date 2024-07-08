@@ -4,41 +4,18 @@ on:
      paths:
          - functions.js
          - index.html
-
+  
 jobs:
-  changed-files:
+  get_files:
+    name: run_on_pr
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0
 
-    - name: Get list of changed files and PR creator email
-      id: pr-info
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const { github, context } = require('@actions/github');
-          
-          const pull_number = context.payload.pull_request.number;
-
-          const { data: files } = await github.pulls.listFiles({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: pull_number,
-            per_page: 100,
-          });
-
-          const changedFiles = files.map(file => file.filename);
-
-          const { data: user } = await github.users.getByUsername({
-            username: context.payload.pull_request.user.login,
-          });
-
-          core.setOutput('changed-files', changedFiles.join(','));
-          core.setOutput('pr-creator-email', user.email);
-
-    - name: Display changed files and PR creator email
-      run: |
-        echo "Changed files: ${{ steps.pr-info.outputs.changed-files }}"
-        echo "PR Creator Email: ${{ steps.pr-info.outputs.pr-creator-email }}"
+      - name: Modified files
+        run: |
+          git fetch origin main:main
+          git diff --name-only --diff-filter=d main~ main
