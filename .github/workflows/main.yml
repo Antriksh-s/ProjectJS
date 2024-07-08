@@ -1,0 +1,30 @@
+name: Verify YAML Files on Pull Request.
+on:
+  push:
+    paths:
+      - functions.js
+      - index.html
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get list of changed files
+        id: changed_files
+        uses: jitterbit/get-changed-files@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+      
+      - name: Display changed files
+        run: |
+            echo "Changed files: ${{ steps.changed_files.outputs.all_modified_files }}"
+            
+
+
+      
