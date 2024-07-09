@@ -35,7 +35,7 @@ jobs:
         if: always()
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GHPAT }}
           script: |
             const fs = require('fs');
             const result = fs.readFileSync('result.txt', 'utf8');
