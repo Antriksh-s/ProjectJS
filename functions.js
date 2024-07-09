@@ -3,5 +3,5 @@ function myfun() {
 }
 
 function docWrite() {
-    document.getElementById("test").document.write = "Access denied";
+    document.getElementById("test").document.write = "Access is denied";
 }
