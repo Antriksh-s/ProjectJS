@@ -6,6 +6,9 @@ on:
          - functions.js
          - index.html
 
+permissions:
+  issues: write         
+
 jobs:
   changed_files:
     runs-on: ubuntu-latest  # windows-latest || macos-latest
@@ -32,7 +35,7 @@ jobs:
         if: always()
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GHPAT }}
           script: |
             const fs = require('fs');
             const result = fs.readFileSync('result.txt', 'utf8');
