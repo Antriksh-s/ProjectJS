@@ -1,20 +1,12 @@
 name: Detect Changed Files and PR Creator Email
 on:
-  push:
-     paths:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
          - functions.js
          - index.html
 
 jobs:
-  # -------------------------------------------------------------
-  # Using GitHub's API is not supported for push events
-  # -------------------------------------------------------------
-  # 
-  # ----------------------------------------------------------------------------------------------
-  # Using local .git history
-  # ----------------------------------------------------------------------------------------------
-  # Event `push`: Compare the preceding remote commit -> to the current commit of the main branch 
-  # ----------------------------------------------------------------------------------------------
   changed_files:
     runs-on: ubuntu-latest  # windows-latest || macos-latest
     name: Test changed-files
@@ -33,16 +25,23 @@ jobs:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           for file in ${ALL_CHANGED_FILES}; do
-            echo "$file was changed"
+            echo "$file was changed" >result.txt
           done
 
-      - name: Create Issue
-        uses: peter-evans/create-issue-from-file@v4
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v6
         with:
-           title: GitHub Actions Workflow Result
-           content-filepath: './results.md'
-           labels: |
-              workflow-results   
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const result = fs.readFileSync('result.txt', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Python script result:\n\`\`\`\n${result}\n\`\`\``
+            })   
 
 
 
