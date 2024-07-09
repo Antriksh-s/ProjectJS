@@ -35,3 +35,19 @@ jobs:
           for file in ${ALL_CHANGED_FILES}; do
             echo "$file was changed"
           done
+
+      - name: Create Issue
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+           title: GitHub Actions Workflow Result
+           content-filepath: './results.md'
+           labels: |
+              workflow-results   
+
+
+
+
+
+
+
+
